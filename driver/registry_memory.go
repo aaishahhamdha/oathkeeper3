@@ -366,6 +366,7 @@ func (r *RegistryMemory) prepareAuthn() {
 			authn.NewAuthenticatorUnauthorized(r.c),
 			authn.NewAuthenticatorCallback(r.c, r.Logger(), r.trc.Provider()),
 			authn.NewAuthenticatorOidcAuthorize(r.c, r.Logger(), r.trc.Provider()),
+			authn.NewAuthenticatorSessionJWT(r.c, r),
 		}
 
 		r.authenticators = map[string]authn.Authenticator{}
