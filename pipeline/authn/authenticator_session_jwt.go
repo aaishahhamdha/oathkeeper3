@@ -81,6 +81,7 @@ func (a *AuthenticatorSessionJWT) BearerTokenFromSession(session *Authentication
 	if token, ok := session.Extra["access_token"]; ok {
 		if tokenStr, ok := token.(string); ok {
 			return tokenStr
+			fmt.Println("token from jwt session:", tokenStr)
 		}
 	}
 	return ""
