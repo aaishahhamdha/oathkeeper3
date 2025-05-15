@@ -295,6 +295,12 @@ func (a *AuthenticatorCallback) Authenticate(r *http.Request, session *Authentic
 		s.Update("access_token", tokenResponse.AccessToken)
 	}
 
+	sessionIDToken, err := s.Get("id_token")
+	if sessionIDToken == nil || err != nil {
+		s.MustSet("id_token", tokenResponse.IDToken)
+	} else {
+		s.Update("id_token", tokenResponse.IDToken)
+	}
 	if tokenResponse.IDToken != "" {
 		session.Extra["id_token"] = tokenResponse.IDToken
 	}
