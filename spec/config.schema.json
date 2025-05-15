@@ -833,13 +833,13 @@
       "title": "Logout Authenticator Configuration",
       "description": "This section is optional when the authenticator is disabled.",
       "properties": {
-        "logout_url": {
+        "oidc_logout_url": {
           "type": "string",
           "format": "uri",
           "description": "The URL to redirect to after logout.",
           "examples": ["https://my-app.com/logout"]
         },
-        "post_logout_redirect_uri": {
+        "post_logout_redirect_urL": {
           "type": "string",
           "format": "uri",
           "description": "The URL to redirect to after logout.",
