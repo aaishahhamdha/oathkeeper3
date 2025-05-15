@@ -75,16 +75,9 @@ func (a *AuthenticatorSessionJWT) Config(config json.RawMessage) (*Authenticator
 
 func (a *AuthenticatorSessionJWT) BearerTokenFromSession(session *AuthenticationSession) string {
 	if session == nil {
-		return "SESSSION_NOT_FOUND"
+		return "SESSION_NOT_FOUND"
 	}
-	if token, ok := session.Extra["access_token"]; ok {
-		if tokenStr, ok := token.(string); ok {
-			fmt.Println("token from jwt session:", tokenStr)
-			return tokenStr
-
-		}
-	}
-	return ""
+	return session.Header.Get("access_token")
 }
 
 func (a *AuthenticatorSessionJWT) Authenticate(r *http.Request, session *AuthenticationSession, config json.RawMessage, _ pipeline.Rule) (err error) {
