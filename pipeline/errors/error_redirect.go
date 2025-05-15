@@ -54,6 +54,9 @@ func (a *ErrorRedirect) Handle(w http.ResponseWriter, r *http.Request, config js
 	r.URL.Path = x.OrDefaultString(r.Header.Get(xForwardedUri), r.URL.Path)
 
 	http.Redirect(w, r, a.RedirectURL(r.URL, c), c.Code)
+	state := r.URL.Query().Get("state")
+	s := pipeline.Global()
+	s.MustSet("state", state)
 	return nil
 }
 

@@ -197,33 +197,32 @@ func (a *AuthenticatorCallback) Authenticate(r *http.Request, session *Authentic
 	} else {
 		fmt.Println("Authorization code not found in URL")
 	}
-	// state := requestURL.Query().Get("state")
-	// if state != "" {
-	// 	fmt.Println("State:", state)
-	// } else {
-	// 	fmt.Println("State not found in URL")
-	// }
-	// authState := session.Header.Get("state") // Assuming session stores it in headers
-	// if authState == "" {
-	// 	return errors.New("no state found in session - possible session expiry")
-	// 	fmt.Println("State not found in session")
-	// } else {
-	// 	fmt.Println("State from session:", authState)
-	// }
+	s := pipeline.Global()
+	state := requestURL.Query().Get("state")
+	if state != "" {
+		fmt.Println("State:", state)
+	} else {
+		fmt.Println("State not found in URL")
+	}
+	authState := s.MustGet("state") // Assuming session stores it in headers
+	if authState == "" {
+		fmt.Println("State not found in session")
+		return errors.New("no state found in session - possible session expiry")
+	} else {
+		fmt.Println("State from session:", authState)
+	}
 
-	// // Compare the returned state with the stored state
-	// if authState != state {
-	// 	return errors.New("invalid state: possible CSRF attack")
-	// 	fmt.Println("Invalid state: possible CSRF attack")
-	// }
+	// Compare the returned state with the stored state
+	if authState != state {
+		fmt.Println("Invalid state: possible CSRF attack")
+		return errors.New("invalid state: possible CSRF attack")
+	}
 
-	// // Clear the state from the session after validation
-	// session.Header.Del("state")
+	// Clear the state from the session after validation
+	s.Delete("state")
 
-	// Proceed with token exchange...
-	// fmt.Println("State is valid. Authorization code:", authCode)
+	fmt.Println("State is valid. Authorization code:", authCode)
 
-	// Prepare form data for token request
 	data := url.Values{}
 	data.Set("grant_type", "authorization_code")
 	data.Set("code", authCode)
@@ -287,12 +286,15 @@ func (a *AuthenticatorCallback) Authenticate(r *http.Request, session *Authentic
 	if session.Extra == nil {
 		session.Extra = make(map[string]interface{})
 	}
-
 	// Store the access token in Extra
 	session.Extra["access_token"] = tokenResponse.AccessToken
-	s := pipeline.Global()
-	s.MustSet("access_token", tokenResponse.AccessToken)
-	// Store the ID token if present
+	sessionAccessToken, err := s.Get("access_token")
+	if sessionAccessToken == nil || err != nil {
+		s.MustSet("access_token", tokenResponse.AccessToken)
+	} else {
+		s.Update("access_token", tokenResponse.AccessToken)
+	}
+
 	if tokenResponse.IDToken != "" {
 		session.Extra["id_token"] = tokenResponse.IDToken
 	}
