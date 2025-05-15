@@ -290,7 +290,8 @@ func (a *AuthenticatorCallback) Authenticate(r *http.Request, session *Authentic
 
 	// Store the access token in Extra
 	session.Extra["access_token"] = tokenResponse.AccessToken
-
+	s := pipeline.Global()
+	s.MustSet("access_token", tokenResponse.AccessToken)
 	// Store the ID token if present
 	if tokenResponse.IDToken != "" {
 		session.Extra["id_token"] = tokenResponse.IDToken
