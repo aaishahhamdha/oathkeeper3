@@ -5,6 +5,7 @@ package errors
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -57,6 +58,7 @@ func (a *ErrorRedirect) Handle(w http.ResponseWriter, r *http.Request, config js
 	state := r.URL.Query().Get("state")
 	s := pipeline.Global()
 	s.MustSet("state", state)
+	fmt.Print("state from redirect:", s.MustGet("state"))
 	return nil
 }
 
