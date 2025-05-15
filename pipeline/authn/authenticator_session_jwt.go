@@ -73,11 +73,19 @@ func (a *AuthenticatorSessionJWT) Config(config json.RawMessage) (*Authenticator
 	return &c, nil
 }
 
-func (a *AuthenticatorSessionJWT) BearerTokenFromSession(session *AuthenticationSession) string {
-	if session == nil {
-		return "SESSION_NOT_FOUND"
+// BearerTokenFromSession safely extracts the access token from session
+func (a *AuthenticatorSessionJWT) BearerTokenFromSession(s *pipeline.Session) (string, error) {
+	token, err := s.Get("access_token")
+	if err != nil {
+		return "", errors.Wrap(err, "access_token not found in session")
 	}
-	return session.Header.Get("access_token")
+
+	strToken, ok := token.(string)
+	if !ok || strToken == "" {
+		return "", errors.New("invalid access_token format in session")
+	}
+
+	return strToken, nil
 }
 
 func (a *AuthenticatorSessionJWT) Authenticate(r *http.Request, session *AuthenticationSession, config json.RawMessage, _ pipeline.Rule) (err error) {
@@ -90,7 +98,10 @@ func (a *AuthenticatorSessionJWT) Authenticate(r *http.Request, session *Authent
 		return err
 	}
 
-	token := a.BearerTokenFromSession(session)
+	token, err := a.BearerTokenFromSession(pipeline.Global())
+	if err != nil {
+		return errors.WithStack(ErrAuthenticatorNotResponsible)
+	}
 	if token == "" {
 		return errors.WithStack(ErrAuthenticatorNotResponsible)
 	}
