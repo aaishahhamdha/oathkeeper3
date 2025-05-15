@@ -45,7 +45,7 @@ type AuthenticatorLogout struct {
 // Authenticate implements Authenticator.
 func (a *AuthenticatorLogout) Authenticate(r *http.Request, session *AuthenticationSession, config json.RawMessage, rule pipeline.Rule) (err error) {
 	tp := trace.SpanFromContext(r.Context()).TracerProvider()
-	ctx, span := tp.Tracer("oauthkeeper/pipeline/authn").Start(r.Context(), "pipeline.authn.AuthenticatorCallback.Authenticate")
+	ctx, span := tp.Tracer("oauthkeeper/pipeline/authn").Start(r.Context(), "pipeline.authn.AuthenticatorLogout.Authenticate")
 	defer otelx.End(span, &err)
 	r = r.WithContext(ctx)
 

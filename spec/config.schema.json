@@ -828,6 +828,27 @@
       ],
       "additionalProperties": false
     },
+    "configAuthenticatorsLogout":{
+      "type": "object",
+      "title": "Logout Authenticator Configuration",
+      "description": "This section is optional when the authenticator is disabled.",
+      "properties": {
+        "logout_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URL to redirect to after logout.",
+          "examples": ["https://my-app.com/logout"]
+        },
+        "post_logout_redirect_uri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URL to redirect to after logout.",
+          "examples": ["https://my-app.com/after-logout"]
+        }
+      },
+      "additionalProperties": false
+
+    },
     "configAuthenticatorsOidcAuthorize": {
       "type": "object",
       "title": "OIDC Authorize Authenticator Configuration",
@@ -1681,6 +1702,36 @@
             },
             "config": {
               "$ref": "#/definitions/configAuthenticatorsCallback"
+            }
+          },
+          "required": ["config"]
+        },
+        {
+          "properties": {
+            "enabled": {
+              "const": false
+            }
+          }
+        }
+      ]
+    },
+    "logout":{
+      "title": "Logout Authenticator",
+      "description": "The [`logout` authenticator] for handling OAuth 2.0 logout flows.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "$ref": "#/definitions/handlerSwitch"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "enabled": {
+              "const": true
+            },
+            "config": {
+              "$ref": "#/definitions/configAuthenticatorsLogout"
             }
           },
           "required": ["config"]
