@@ -100,9 +100,11 @@ func (a *AuthenticatorSessionJWT) Authenticate(r *http.Request, session *Authent
 
 	token, err := a.BearerTokenFromSession(pipeline.Global())
 	if err != nil {
+		fmt.Println("error getting token from session:", err)
 		return errors.WithStack(ErrAuthenticatorNotResponsible)
 	}
 	if token == "" {
+		fmt.Println("token is empty")
 		return errors.WithStack(ErrAuthenticatorNotResponsible)
 	}
 	fmt.Println("token from jwt authenticator:", token)
