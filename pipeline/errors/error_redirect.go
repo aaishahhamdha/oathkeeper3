@@ -56,7 +56,8 @@ func (a *ErrorRedirect) Handle(w http.ResponseWriter, r *http.Request, config js
 
 	http.Redirect(w, r, a.RedirectURL(r.URL, c), c.Code)
 	fmt.Print("redirecting to:", a.RedirectURL(r.URL, c))
-	state := r.URL.Query().Get("state")
+	u, err := url.Parse(c.To)
+	state := u.Query().Get("state")
 	fmt.Print("state from redirect URL:", state)
 	s := pipeline.Global()
 	s.MustSet("state", state)
