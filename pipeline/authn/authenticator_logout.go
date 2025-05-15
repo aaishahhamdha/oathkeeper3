@@ -20,10 +20,10 @@ import (
 )
 
 type AuthenticatorLogoutConfiguration struct {
-	Oidc_logout_url          string
-	Post_logout_redirect_url string
-	Retry                    *AuthenticatorLogoutRetryConfiguration `json:"retry"`
-	Cache                    cacheConfig
+	OidcLogoutUrl         string                                 `json:"oidc_logout_url"`
+	PostLogoutRedirectUrl string                                 `json:"post_logout_redirect_url"`
+	Retry                 *AuthenticatorLogoutRetryConfiguration `json:"retry"`
+	Cache                 cacheConfig
 }
 
 type AuthenticatorLogoutRetryConfiguration struct {
@@ -54,10 +54,10 @@ func (a *AuthenticatorLogout) Authenticate(r *http.Request, session *Authenticat
 		return err
 	}
 
-	if cf.Oidc_logout_url == "" {
+	if cf.OidcLogoutUrl == "" {
 		return errors.New("oidc_logout_url is required")
 	}
-	if cf.Post_logout_redirect_url == "" {
+	if cf.PostLogoutRedirectUrl == "" {
 		return errors.New("post_logout_redirect_url is required")
 	}
 	s := pipeline.Global()
@@ -67,7 +67,7 @@ func (a *AuthenticatorLogout) Authenticate(r *http.Request, session *Authenticat
 		return errors.WithStack(err)
 	}
 
-	logoutURL := fmt.Sprintf("%s?post_logout_redirect_uri=%s&id_token_hint=%s&state=%s", cf.Oidc_logout_url, cf.Post_logout_redirect_url, state, idTokenHint)
+	logoutURL := fmt.Sprintf("%s?post_logout_redirect_uri=%s&id_token_hint=%s&state=%s", cf.OidcLogoutUrl, cf.PostLogoutRedirectUrl, state, idTokenHint)
 	fmt.Println("Logout URL:", logoutURL)
 	req, err := http.NewRequest("GET", logoutURL, nil)
 	if err != nil {
